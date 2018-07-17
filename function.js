@@ -36,7 +36,7 @@ router.get('/users', (req, res) => {
         ],
     };
 
-    res.end(JSON.stringify(userSchema));
+    res.status(200).send(JSON.stringify(userSchema));
 });
 
 router.get('/', (req, res) => {
