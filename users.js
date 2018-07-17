@@ -28,7 +28,7 @@ app.get('/users', (req, res) => {
             },
             "sec_level": {
                 "title": "Security Level",
-                "description": "Please enter a security level. It must be >= 0. Lower is less privileged."
+                "description": "Please enter a security level. It must be >= 0. Lower is less privileged.",
                 "type": "int"
             }
         }
