@@ -26,12 +26,14 @@ router.get('/users', (req, res) => {
         }
 
         let users = results.rows.map(row=> {
-            id: row.id,
-            username: row.username,
-            sec_level: row.sec_level,
-            links: {
-                {rel: "self", method: "GET", href: "/users/"+row.username},
-            },
+            return {
+              id: row.id,
+              username: row.username,
+              sec_level: row.sec_level,
+              links: [
+                  {rel: "self", method: "GET", href: "/users/"+row.username},
+              ],
+            }
         });
 
         var userSchema = {
