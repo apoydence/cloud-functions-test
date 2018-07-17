@@ -4,6 +4,8 @@
   "description": "Messing around with cloud functions",
   "main": "function.js",
   "dependencies": {
+    "express": "^4.16.3",
+    "express-hateoas-links": "^1.0.9",
     "pg": "^7.4.3"
   },
   "devDependencies": {},
