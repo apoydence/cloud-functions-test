@@ -83,18 +83,39 @@ router.param('user_id', (req, res, next, idStr) => {
     next();
 });
 
+function parseJSON(body, onSuccess, onError){
+    var result;
+    try {
+        result = JSON.parse(body);
+    }
+    catch(error){
+        onError(error);
+    }
+
+    onSuccess(result);
+}
+
 router.post('/users/', (req, res) => {
-    if (!req.body.username){
-        res.status(400).send(JSON.stringify({"error": "missing username"}));
-        return;
-    }
+    parseJSON(
+        req.body,
+        (body) => {
+            if (!req.body.username){
+                res.status(400).send(JSON.stringify({"error": "missing username"}));
+                return;
+            }
 
-    if (!req.body.password){
-        res.status(400).send(JSON.stringify({"error": "missing password"}));
-        return;
-    }
+            if (!req.body.password){
+                res.status(400).send(JSON.stringify({"error": "missing password"}));
+                return;
+            }
 
-    res.status(201).end();
+            res.status(201).end();
+        },
+        (error) => {
+            res.status(400).send(JSON.stringify({"error": error}));
+            return;
+        }
+    )
 
     // let query = util.format('INSERT INTO user_values (username,password) VALUES ("%s","%s")', req.user_id);
 
