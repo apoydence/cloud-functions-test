@@ -84,28 +84,23 @@ router.param('user_id', (req, res, next, idStr) => {
 });
 
 router.use((req, res, next) => {
-    console.log("!!!!!!!! PARSE AUTH", req.headers);
     if (!req.headers || !req.headers.authorization){
-    console.log("!!!!!!!! PARSE AUTH1", req.headers);
         next();
         return;
     }
 
     let parts = req.headers.authorization.split(/[ ,]+/)
     if (parts.length != 2 || parts[0] != "Basic") {
-    console.log("!!!!!!!! PARSE AUTH2");
         next();
         return;
     }
 
     parts = Buffer.from(parts[1], 'base64').toString('ascii').split(':');
     if (parts.length != 2) {
-    console.log("!!!!!!!! PARSE AUTH3");
         next();
         return;
     }
 
-    console.log("!!!!!!!! PARSE AUTH4", parts);
     req.username=parts[0];
     req.password=parts[1];
 
@@ -138,7 +133,7 @@ router.post('/users/', (req, res) => {
 
 
 router.get('/users/:user_id', (req, res) => {
-    let query = util.format('SELECT id,username,sec_level FROM user_values where id=%d LIMIT 1', req.user_id);
+    let query = util.format('SELECT id,username,sec_level FROM user_values WHERE id=%d LIMIT 1', req.user_id);
 
     pool.query(query, (err, results) => {
         if (err) {
@@ -164,19 +159,53 @@ router.get('/users/:user_id', (req, res) => {
     });
 });
 
-router.delete('/users/:user_id', (req, res) => {
-    console.log("!!!!!!!!!!", req.username, req.password);
-    let query = util.format('DELETE FROM user_values where id=%d', req.user_id);
+function checkUser(auth, onSuccess, onError){
+    let query = util.format("SELECT id FROM user_values WHERE username=%s AND password=%s LIMIT 1", req.username, req.password);
 
     pool.query(query, (err, results) => {
         if (err) {
-            console.log(err);
-            res.status(500).send(JSON.stringify({"error":"failed to make request to database"}));
+            onError(err);
             return;
         }
 
-        res.status(204).end();
+        if (results.rows.length == 0) {
+            onError(null);
+            return;
+        }
+
+        onSuccess(results.rows[0].id);
     });
+}
+
+router.delete('/users/:user_id', (req, res) => {
+    if (!req.username || !req.password) {
+        res.status(401).end();
+        return
+    }
+
+    checkUser(
+        req,
+        (id)=>{
+            if (id != req.user_id){
+                res.status(400).json({"error":"mismatch in user ids"});
+                return
+            }
+
+            let query = util.format('DELETE FROM user_values WHERE id=%d', id);
+
+            pool.query(query, (err, results) => {
+                if (err) {
+                    console.log(err);
+                    res.status(500).send(JSON.stringify({"error":"failed to make request to database"}));
+                    return;
+                }
+
+                res.status(204).end();
+            });
+        },
+        (error) => {
+        }
+    )
 });
 
 exports.users = (req, res) => {
