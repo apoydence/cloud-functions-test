@@ -121,11 +121,6 @@ router.delete('/users/:user_id', (req, res) => {
             return;
         }
 
-        if (results.rows.length == 0) {
-            res.status(404).send(JSON.stringify({"error":"unknown user id", id:req.user_id}));
-            return;
-        }
-
         res.status(204).end();
     });
 });
