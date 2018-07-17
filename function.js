@@ -157,5 +157,6 @@ exports.users = (req, res) => {
     console.log("!!!", req.body);
     console.log("!!! u", req.body.username);
     console.log("!!! p", req.body.password);
+    console.log("!!! k", Object.keys(req.body));
     router(req, res, finalhandler(req, res));
 };
