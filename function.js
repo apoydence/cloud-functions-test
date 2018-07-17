@@ -178,6 +178,7 @@ function checkUser(auth, onSuccess, onError){
 }
 
 router.delete('/users/:user_id', (req, res) => {
+    console.log("DELETE", req.username, req.password);
     if (!req.username || !req.password) {
         res.status(401).end();
         return
@@ -186,6 +187,7 @@ router.delete('/users/:user_id', (req, res) => {
     checkUser(
         req,
         (id)=>{
+            console.log("CHECK USER SUCC");
             if (id != req.user_id){
                 res.status(400).json({"error":"mismatch in user ids"});
                 return
@@ -204,6 +206,12 @@ router.delete('/users/:user_id', (req, res) => {
             });
         },
         (error) => {
+            console.log("CHECK USER ERR", error);
+            if (error){
+                console.log(error);
+            }
+
+            res.status(401).end();
         }
     )
 });
