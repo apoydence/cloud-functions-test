@@ -7,17 +7,16 @@ var users        = require('./users')
 const pg = require('pg');
 
 const connectionName = process.env.CONN_NAME;
-const dbUser = process.env.DB_USER;
-const dbPass = process.env.DB_PASSWORD;
-const dbName = process.env.DB_NAME;
-
-    const pool = new pg.Pool({
-        max: 1,
-        host: '/cloudsql/' + connectionName,
-        user: dbUser,
-        password: dbPass,
-        database: dbName
-    });
+const dbUser = process.env.DB_USER
+const dbPass = process.env.DB_PASSWORD
+const dbName = process.env.DB_NAME
+const pool = new pg.Pool({
+    max: 1,
+    host: '/cloudsql/' + connectionName,
+    user: dbUser,
+    password: dbPass,
+    database: dbName
+});
 
 router.get('/users', (req, res) => {
     pool.query('SELECT id,username,sec_level FROM user_values', (err, results) => { if (err) {
@@ -83,26 +82,6 @@ router.param('user_id', (req, res, next, idStr) => {
 
     req.user_id=id;
     next();
-});
-
-router.get('/users2/:user_id', (req, res)=>{
-    console.log("USER2");
-    users.find(
-        req.user_id,
-        (user)=>{
-            res.status(200).send(JSON.stringify(user));
-        },
-        (err)=>{
-            if (err) {
-                console.log("failed to read from database: " + err);
-                res.status(500).send(JSON.stringify({"error":"failed to make request to database"}));
-                return;
-            }
-
-            res.status(404).send(JSON.stringify({"error":"unknown user id", id:req.user_id}));
-            return;
-        }
-    );
 });
 
 router.get('/users/:user_id', (req, res) => {
