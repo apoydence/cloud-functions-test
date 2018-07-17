@@ -86,22 +86,26 @@ router.param('user_id', (req, res, next, idStr) => {
 router.use((req, res, next) => {
     console.log("!!!!!!!! PARSE AUTH");
     if (!req.header || !req.header.authorization){
+    console.log("!!!!!!!! PARSE AUTH1");
         next();
         return;
     }
 
     let parts = req.header.authorization.split(/[ ,]+/)
     if (parts.length != 2 || parts[0] != "Basic") {
+    console.log("!!!!!!!! PARSE AUTH2");
         next();
         return;
     }
 
     parts = Buffer.from(parts[1], 'base64').toString('ascii').split(':');
     if (parts.length != 2) {
+    console.log("!!!!!!!! PARSE AUTH3");
         next();
         return;
     }
 
+    console.log("!!!!!!!! PARSE AUTH4");
     req.username=parts[0];
     req.password=parts[1];
 
