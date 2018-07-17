@@ -180,7 +180,7 @@ function checkUser(auth, onSuccess, onError){
 }
 
 router.delete('/users/:user_id', (req, res) => {
-    console.log("DELETE", req.username, req.password);
+    console.log("DELETE", req.username, req.password, checkUser);
     if (!req.username || !req.password) {
         res.status(401).end();
         return
