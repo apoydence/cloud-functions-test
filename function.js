@@ -84,6 +84,43 @@ router.param('user_id', (req, res, next, idStr) => {
     next();
 });
 
+function parseJSON(body, onSuccess, onFailure) {
+    var parsed;
+    try {
+        parsed = JSON.parse(body);
+    }
+    catch(error){
+        onFailure(error);
+    }
+
+    onSuccess(parsed);
+}
+
+router.post('/users/', (req, res) => {
+    parseJSON(
+        req.body.text,
+        (body)=>{
+            res.status(201).end();
+        },
+        (error)=>{
+            res.status(400).send(JSON.stringify({"error": error}));
+        }
+    );
+
+    // let query = util.format('INSERT INTO user_values (username,password) VALUES ("%s","%s")', req.user_id);
+
+    // pool.query(query, (err, results) => {
+    //     if (err) {
+    //         console.log(err);
+    //         res.status(500).send(JSON.stringify({"error":"failed to make request to database"}));
+    //         return;
+    //     }
+
+    //     res.status(204).end();
+    // });
+});
+
+
 router.get('/users/:user_id', (req, res) => {
     let query = util.format('SELECT id,username,sec_level FROM user_values where id=%d LIMIT 1', req.user_id);
 
