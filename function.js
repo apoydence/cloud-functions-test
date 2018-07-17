@@ -45,7 +45,7 @@ router.get('/', (req, res) => {
 });
 
 exports.helloWorld = (req, res) => {
-  console.log("helloWorld started");
+  console.log("helloWorld started " + req.path);
   router(req, res, finalhandler(req, res));
   // let message = req.query.message || req.body.message || 'Hello World!';
   // res.status(200).send(message);
