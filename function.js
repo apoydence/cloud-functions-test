@@ -101,10 +101,30 @@ router.use((req, res, next) => {
         return;
     }
 
-    req.username=parts[0];
-    req.password=parts[1];
+    let username = parts[0];
+    let password = parts[1];
 
-    next();
+    if (!username || !password) {
+        next();
+        return;
+    }
+
+    checkUser(
+        username,
+        password,
+        (id, sec_level) => {
+            req.user = {
+                username: username,
+                password: password,
+                user_id: id,
+                sec_level: sec_level,
+            }
+            next();
+        },
+        (error) => {
+            res.status(401).end();
+        }
+    )
 });
 
 router.post('/users/', (req, res) => {
@@ -130,7 +150,6 @@ router.post('/users/', (req, res) => {
         res.status(201).end();
     });
 });
-
 
 router.get('/users/:user_id', (req, res) => {
     let query = util.format('SELECT id,username,sec_level FROM user_values WHERE id=%d LIMIT 1', req.user_id);
@@ -159,8 +178,8 @@ router.get('/users/:user_id', (req, res) => {
     });
 });
 
-function checkUser(req, onSuccess, onError){
-    let query = util.format("SELECT id FROM user_values WHERE username='%s' AND password='%s' LIMIT 1", req.username, req.password);
+function checkUser(username, password, onSuccess, onError){
+    let query = util.format("SELECT id,sec_level FROM user_values WHERE username='%s' AND password='%s' LIMIT 1", username, password);
     console.log("CHECK USER");
 
     pool.query(query, (err, results) => {
@@ -175,48 +194,34 @@ function checkUser(req, onSuccess, onError){
             return;
         }
 
-        onSuccess(results.rows[0].id);
+        onSuccess(results.rows[0].id, results.rows[0].sec_level);
     });
 }
 
 router.delete('/users/:user_id', (req, res) => {
-    console.log("DELETE", req.username, req.password, checkUser);
-    if (!req.username || !req.password) {
+    console.log("DELETE");
+    if (!req.user) {
         res.status(401).end();
         return
     }
-    console.log("GO DO IT", checkUser);
+    console.log("GO DO IT");
 
-    checkUser(
-        req,
-        (id)=>{
-            console.log("CHECK USER SUCC");
-            if (id != req.user_id){
-                res.status(400).json({"error":"mismatch in user ids"});
-                return
-            }
+    if (req.user.user_id != req.user_id) {
+        res.status(400).json({"error":"mismatch in user ids"});
+        return
+    }
 
-            let query = util.format('DELETE FROM user_values WHERE id=%d', id);
+    let query = util.format('DELETE FROM user_values WHERE id=%d', req.user_id);
 
-            pool.query(query, (err, results) => {
-                if (err) {
-                    console.log(err);
-                    res.status(500).send(JSON.stringify({"error":"failed to make request to database"}));
-                    return;
-                }
-
-                res.status(204).end();
-            });
-        },
-        (error) => {
-            console.log("CHECK USER ERR", error);
-            if (error){
-                console.log(error);
-            }
-
-            res.status(401).end();
+    pool.query(query, (err, results) => {
+        if (err) {
+            console.log(err);
+            res.status(500).send(JSON.stringify({"error":"failed to make request to database"}));
+            return;
         }
-    )
+
+        res.status(204).end();
+    });
 });
 
 exports.users = (req, res) => {
