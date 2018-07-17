@@ -97,7 +97,8 @@ function parseJSON(body, onSuccess, onFailure) {
 }
 
 router.post('/users/', (req, res) => {
-    console.log("!!! POST", req);
+    console.log("!!! POST", req, req.body.message);
+    console.log("!!!", JSON.stringify(req));
     parseJSON(
         req.body.text,
         (body)=>{
