@@ -1,6 +1,7 @@
 var finalhandler = require('finalhandler')
 var Router       = require('router')
 var router       = Router()
+var util         = require('util')
 
 const pg = require('pg');
 
@@ -20,9 +21,9 @@ const dbName = process.env.DB_NAME;
 router.get('/users', (req, res) => {
     pool.query('SELECT id,username,sec_level from user_values', (err, results) => {
         if (err) {
-          console.log(err);
-          res.status(500).send(JSON.stringify({"error":"failed to make request to database"}));
-          return;
+            console.log(err);
+            res.status(500).send(JSON.stringify({"error":"failed to make request to database"}));
+            return;
         }
 
         let users = results.rows.map(row=> {
@@ -74,8 +75,36 @@ router.get('/users', (req, res) => {
 });
 
 router.get('/users/:id', (req, res) => {
-    console.log("!!!!!!!!!!! /users/:id", req.params.id);
-    res.status(200).send(req.params.id);
+    let id = parseInt(req.params.id);
+    if (id == NaN){
+        res.status(400).send(JSON.stringify({"error":"id must be an integer"}));
+        return;
+    }
+
+    let query = util.format('SELECT id,username,sec_level from user_values where id=%d limit 1', id);
+
+    pool.query(query, (err, results) => {
+        if (err) {
+            console.log(err);
+            res.status(500).send(JSON.stringify({"error":"failed to make request to database"}));
+            return;
+        }
+
+        if (results.rows.length == 0) {
+            res.status(404).send(JSON.stringify({"error":"unknown user id", id:id}));
+            return;
+        }
+
+        res.status(200).send(JSON.stringify({
+            id: results.rows[0].id,
+            username: results.rows[0].username,
+            sec_level: results.rows[0].sec_level,
+            links: [
+                {rel: "self", method: "GET", href: "/users/"+results.rows[0].id},
+                {rel: "delete", method: "DELETE", title: "Delete User", href: "/users/"+results.rows[0].id},
+            ],
+        }));
+    });
 });
 
 exports.users = (req, res) => {
