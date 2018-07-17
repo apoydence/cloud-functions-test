@@ -84,6 +84,7 @@ router.param('user_id', (req, res, next, idStr) => {
 });
 
 function parseJSON(body, onSuccess, onFailure) {
+    console.log("!!!!!!!!", body);
     var parsed;
     try {
         parsed = JSON.parse(body);
