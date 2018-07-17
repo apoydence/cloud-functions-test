@@ -84,17 +84,17 @@ router.param('user_id', (req, res, next, idStr) => {
 });
 
 router.post('/users/', (req, res) => {
-    if (!body.username){
+    if (!req.body.username){
         res.status(400).send(JSON.stringify({"error": "missing username"}));
         return;
     }
 
-    if (!body.password){
+    if (!req.body.password){
         res.status(400).send(JSON.stringify({"error": "missing password"}));
         return;
     }
 
-    let query = util.format("INSERT INTO user_values (username,password) VALUES ('%s','%s')", body.username, body.password);
+    let query = util.format("INSERT INTO user_values (username,password) VALUES ('%s','%s')", req.body.username, req.body.password);
 
     pool.query(query, (err, results) => {
         if (err) {
