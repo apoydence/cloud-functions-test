@@ -37,6 +37,11 @@ router.get('/users', (req, res) => {
     ]);
 });
 
-exports.users = (req, res) => {
+exports.users2 = (req, res) => {
     router(req, res, finalhandler(req, res));
+};
+
+exports.users = (req, res) => {
+      let message = req.query.message || req.body.message || 'Hello World!';
+      res.status(200).send(message);
 };
