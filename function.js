@@ -185,6 +185,7 @@ router.delete('/users/:user_id', (req, res) => {
         res.status(401).end();
         return
     }
+    console.log("GO DO IT", checkUser);
 
     checkUser(
         req,
