@@ -97,12 +97,14 @@ function parseJSON(body, onSuccess, onFailure) {
 }
 
 router.post('/users/', (req, res) => {
+    console.log("!!! POST", req.body.text);
     parseJSON(
         req.body.text,
         (body)=>{
             res.status(201).end();
         },
         (error)=>{
+            console.log("wHY !!!!!!!!", body);
             res.status(400).send(JSON.stringify({"error": error}));
         }
     );
