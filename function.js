@@ -85,13 +85,13 @@ router.param('user_id', (req, res, next, idStr) => {
 
 router.use((req, res, next) => {
     console.log("!!!!!!!! PARSE AUTH");
-    if (!req.header || !req.header.authorization){
-    console.log("!!!!!!!! PARSE AUTH1");
+    if (!req.headers || !req.headers.authorization){
+    console.log("!!!!!!!! PARSE AUTH1", req.headers);
         next();
         return;
     }
 
-    let parts = req.header.authorization.split(/[ ,]+/)
+    let parts = req.headers.authorization.split(/[ ,]+/)
     if (parts.length != 2 || parts[0] != "Basic") {
     console.log("!!!!!!!! PARSE AUTH2");
         next();
