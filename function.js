@@ -38,6 +38,7 @@ router.get('/users', (req, res) => {
 });
 
 exports.helloWorld = (req, res) => {
-  let message = req.query.message || req.body.message || 'Hello World!';
-  res.status(200).send(message);
+  router(req, res, finalhandler(req, res));
+  // let message = req.query.message || req.body.message || 'Hello World!';
+  // res.status(200).send(message);
 };
