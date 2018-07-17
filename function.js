@@ -83,30 +83,18 @@ router.param('user_id', (req, res, next, idStr) => {
     next();
 });
 
-function parseJSON(body, onSuccess, onFailure) {
-    console.log("!!!!!!!!", body);
-    var parsed;
-    try {
-        parsed = JSON.parse(body);
-    }
-    catch(error){
-        onFailure(error);
-    }
-
-    onSuccess(parsed);
-}
-
 router.post('/users/', (req, res) => {
-    parseJSON(
-        req.body.text,
-        (body)=>{
-            res.status(201).end();
-        },
-        (error)=>{
-            console.log("wHY !!!!!!!!", body);
-            res.status(400).send(JSON.stringify({"error": error}));
-        }
-    );
+    if (!req.body.username){
+        res.status(400).send(JSON.stringify({"error": "missing username"}));
+        return;
+    }
+
+    if (!req.body.password){
+        res.status(400).send(JSON.stringify({"error": "missing password"}));
+        return;
+    }
+
+    res.status(201).end();
 
     // let query = util.format('INSERT INTO user_values (username,password) VALUES ("%s","%s")', req.user_id);
 
@@ -164,6 +152,6 @@ router.delete('/users/:user_id', (req, res) => {
 });
 
 exports.users = (req, res) => {
-    console.log("!!! ROUTER", req.body.message);
+    req.body=Object.keys(req.body)[0];
     router(req, res, finalhandler(req, res));
 };
