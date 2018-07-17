@@ -74,14 +74,19 @@ router.get('/users', (req, res) => {
     });
 });
 
-router.get('/users/:id', (req, res) => {
-    let id = parseInt(req.params.id);
+router.param('user_id', (req, res, next, idStr) => {
+    let id = parseInt(idStr);
     if (id == NaN){
-        res.status(400).send(JSON.stringify({"error":"id must be an integer"}));
+        next(new Error('user id must be an integer'));
         return;
     }
 
-    let query = util.format('SELECT id,username,sec_level from user_values where id=%d limit 1', id);
+    req.user_id=id;
+    next();
+});
+
+router.get('/users/:user_id', (req, res) => {
+    let query = util.format('SELECT id,username,sec_level from user_values where id=%d limit 1', req.user_id);
 
     pool.query(query, (err, results) => {
         if (err) {
@@ -91,17 +96,17 @@ router.get('/users/:id', (req, res) => {
         }
 
         if (results.rows.length == 0) {
-            res.status(404).send(JSON.stringify({"error":"unknown user id", id:id}));
+            res.status(404).send(JSON.stringify({"error":"unknown user id", id:req.user_id}));
             return;
         }
 
         res.status(200).send(JSON.stringify({
-            id: results.rows[0].id,
+            id: req.user_id,
             username: results.rows[0].username,
             sec_level: results.rows[0].sec_level,
             links: [
-                {rel: "self", method: "GET", href: "/users/"+results.rows[0].id},
-                {rel: "delete", method: "DELETE", title: "Delete User", href: "/users/"+results.rows[0].id},
+                {rel: "self", method: "GET", href: "/users/"+req.user_id},
+                {rel: "delete", method: "DELETE", title: "Delete User", href: "/users/"+req.user_id},
             ],
         }));
     });
