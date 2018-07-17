@@ -99,12 +99,13 @@ router.post('/users/', (req, res) => {
     parseJSON(
         req.body,
         (body) => {
-            if (!req.body.username){
+            console.log("PARSED BODY", body);
+            if (!body.username){
                 res.status(400).send(JSON.stringify({"error": "missing username"}));
                 return;
             }
 
-            if (!req.body.password){
+            if (!body.password){
                 res.status(400).send(JSON.stringify({"error": "missing password"}));
                 return;
             }
