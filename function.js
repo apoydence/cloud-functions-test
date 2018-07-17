@@ -152,8 +152,8 @@ router.delete('/users/:user_id', (req, res) => {
 });
 
 exports.users = (req, res) => {
-    console.log("!!!" req.body);
+    console.log("!!!", req.body);
     req.body=Object.keys(req.body)[0];
-    console.log("!!!" req.body);
+    console.log("!!!", req.body);
     router(req, res, finalhandler(req, res));
 };
