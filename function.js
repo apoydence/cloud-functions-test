@@ -86,6 +86,7 @@ router.param('user_id', (req, res, next, idStr) => {
 });
 
 router.get('/users2/:user_id', (req, res)=>{
+    console.log("USER2");
     users.find(
         req.user_id,
         (user)=>{
@@ -93,7 +94,7 @@ router.get('/users2/:user_id', (req, res)=>{
         },
         (err)=>{
             if (err) {
-                console.log(err);
+                console.log("failed to read from database: " + err);
                 res.status(500).send(JSON.stringify({"error":"failed to make request to database"}));
                 return;
             }
