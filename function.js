@@ -31,7 +31,7 @@ router.get('/users', (req, res) => {
               username: row.username,
               sec_level: row.sec_level,
               links: [
-                  {rel: "self", method: "GET", href: "/users/"+row.username},
+                  {rel: "self", method: "GET", href: "/users/"+row.id},
               ],
             }
         });
@@ -71,6 +71,11 @@ router.get('/users', (req, res) => {
 
         res.status(200).send(JSON.stringify(userSchema));
     });
+});
+
+router.get('/users/:id', (req, res) => {
+    console.log("!!!!!!!!!!! /users/:id", req.params.id);
+    res.status(200).send(req.params.id);
 });
 
 exports.users = (req, res) => {
