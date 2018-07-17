@@ -1,8 +1,24 @@
 exports.find = (user_id, onSuccess, onError) => {
     console.log("FIND");
+
+    const pg = require('pg');
+
+    const connectionName = process.env.CONN_NAME;
+    const dbUser = process.env.DB_USER;
+    const dbPass = process.env.DB_PASSWORD;
+    const dbName = process.env.DB_NAME;
+
+    let pool = pg.Pool({
+            max: 1,
+            host: '/cloudsql/' + connectionName,
+            user: dbUser,
+            password: dbPass,
+            database: dbName
+        });
+
     let query = util.format('SELECT id,username,sec_level FROM user_values where id=%d LIMIT 1', user_id);
 
-    pool().query(query, (err, results) => {
+    pool.query(query, (err, results) => {
         console.log("QUERY DONE", err, results);
         if (err) {
             onError(err)
@@ -25,20 +41,3 @@ exports.find = (user_id, onSuccess, onError) => {
         });
     });
 };
-
-function pool() {
-    console.log("POOL");
-    const pg = require('pg');
-
-    const connectionName = process.env.CONN_NAME;
-    const dbUser = process.env.DB_USER;
-    const dbPass = process.env.DB_PASSWORD;
-    const dbName = process.env.DB_NAME;
-    return pg.Pool({
-            max: 1,
-            host: '/cloudsql/' + connectionName,
-            user: dbUser,
-            password: dbPass,
-            database: dbName
-        });
-}
