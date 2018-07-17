@@ -99,7 +99,6 @@ router.post('/users/', (req, res) => {
     parseJSON(
         req.body,
         (body) => {
-            console.log("PARSED BODY", body);
             if (!body.username){
                 res.status(400).send(JSON.stringify({"error": "missing username"}));
                 return;
@@ -110,25 +109,23 @@ router.post('/users/', (req, res) => {
                 return;
             }
 
-            res.status(201).end();
+            let query = util.format('INSERT INTO user_values (username,password) VALUES ("%s","%s")', body.username, body.password);
+
+            pool.query(query, (err, results) => {
+                if (err) {
+                    console.log(err);
+                    res.status(500).send(JSON.stringify({"error":"failed to make request to database"}));
+                    return;
+                }
+
+                res.status(201).end();
+            });
         },
         (error) => {
             res.status(400).send(JSON.stringify({"error": error}));
             return;
         }
     )
-
-    // let query = util.format('INSERT INTO user_values (username,password) VALUES ("%s","%s")', req.user_id);
-
-    // pool.query(query, (err, results) => {
-    //     if (err) {
-    //         console.log(err);
-    //         res.status(500).send(JSON.stringify({"error":"failed to make request to database"}));
-    //         return;
-    //     }
-
-    //     res.status(204).end();
-    // });
 });
 
 
