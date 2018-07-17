@@ -28,14 +28,15 @@ router.get('/users', (req, res) => {
                 "title": "Security Level",
                 "description": "Please enter a security level. It must be >= 0. Lower is less privileged.",
                 "type": "int"
-            }
-        }
+            },
+        },
+        links: [
+            {rel: "self", method: "GET", href: "/users/"},
+            {rel: "create", method: "POST", title: "Create User", href: "/users/"},
+        ],
     };
 
-    res.json(userSchema, [
-        {rel: "self", method: "GET", href: "/users/"},
-        {rel: "create", method: "POST", title: "Create User", href: "/users/"},
-    ]);
+    res.end(JSON.stringify(userSchema));
 });
 
 router.get('/', (req, res) => {
@@ -47,8 +48,6 @@ router.get('/', (req, res) => {
 exports.helloWorld = (req, res) => {
   console.log("helloWorld started " + req.path);
   router(req, res, finalhandler(req, res));
-  // let message = req.query.message || req.body.message || 'Hello World!';
-  // res.status(200).send(message);
 };
 
 console.log("START!!");
