@@ -110,6 +110,7 @@ router.post('/users/', (req, res) => {
             }
 
             let query = util.format('INSERT INTO user_values (username,password) VALUES ("%s","%s")', body.username, body.password);
+            console.log("QUERY", query)
 
             pool.query(query, (err, results) => {
                 if (err) {
