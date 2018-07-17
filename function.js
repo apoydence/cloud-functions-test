@@ -83,50 +83,28 @@ router.param('user_id', (req, res, next, idStr) => {
     next();
 });
 
-function parseJSON(body, onSuccess, onError){
-    var result;
-    try {
-        result = JSON.parse(body);
-    }
-    catch(error){
-        onError(error);
-    }
-
-    onSuccess(result);
-}
-
 router.post('/users/', (req, res) => {
-    parseJSON(
-        req.body,
-        (body) => {
-            if (!body.username){
-                res.status(400).send(JSON.stringify({"error": "missing username"}));
-                return;
-            }
+    if (!body.username){
+        res.status(400).send(JSON.stringify({"error": "missing username"}));
+        return;
+    }
 
-            if (!body.password){
-                res.status(400).send(JSON.stringify({"error": "missing password"}));
-                return;
-            }
+    if (!body.password){
+        res.status(400).send(JSON.stringify({"error": "missing password"}));
+        return;
+    }
 
-            let query = util.format("INSERT INTO user_values (username,password) VALUES ('%s','%s')", body.username, body.password);
-            console.log("QUERY", query)
+    let query = util.format("INSERT INTO user_values (username,password) VALUES ('%s','%s')", body.username, body.password);
 
-            pool.query(query, (err, results) => {
-                if (err) {
-                    console.log(err);
-                    res.status(500).send(JSON.stringify({"error":"failed to make request to database"}));
-                    return;
-                }
-
-                res.status(201).end();
-            });
-        },
-        (error) => {
-            res.status(400).send(JSON.stringify({"error": error}));
+    pool.query(query, (err, results) => {
+        if (err) {
+            console.log(err);
+            res.status(500).send(JSON.stringify({"error":"failed to make request to database"}));
             return;
         }
-    )
+
+        res.status(201).end();
+    });
 });
 
 
