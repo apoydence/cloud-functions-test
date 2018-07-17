@@ -2,7 +2,6 @@ var finalhandler = require('finalhandler')
 var Router       = require('router')
 var router       = Router()
 var util         = require('util')
-var users        = require('./users')
 
 const pg = require('pg');
 
