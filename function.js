@@ -3,6 +3,7 @@ var Router       = require('router')
 var router       = Router()
 
 router.get('/users', (req, res) => {
+    console.log("/users started");
     var userSchema = {
         "name": "user",
         "description": "This JSON Schema defines the paramaters required to create a user",
@@ -38,11 +39,13 @@ router.get('/users', (req, res) => {
 });
 
 router.get('/', (req, res) => {
+  console.log("/ started");
   let message = req.query.message || req.body.message || 'Hello World!';
   res.status(200).send(message);
 });
 
 exports.helloWorld = (req, res) => {
+  console.log("helloWorld started");
   router(req, res, finalhandler(req, res));
   // let message = req.query.message || req.body.message || 'Hello World!';
   // res.status(200).send(message);
