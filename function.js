@@ -160,7 +160,7 @@ router.get('/users/:user_id', (req, res) => {
 });
 
 function checkUser(req, onSuccess, onError){
-    let query = util.format("SELECT id FROM user_values WHERE username=%s AND password=%s LIMIT 1", req.username, req.password);
+    let query = util.format("SELECT id FROM user_values WHERE username='%s' AND password='%s' LIMIT 1", req.username, req.password);
     console.log("CHECK USER");
 
     pool.query(query, (err, results) => {
