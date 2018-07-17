@@ -76,8 +76,7 @@ router.get('/users', (req, res) => {
 
 router.param('user_id', (req, res, next, idStr) => {
     let id = parseInt(idStr);
-    console.log("!!!!!!!!!!!!!!", idStr, id);
-    if (id == NaN){
+    if (isNaN(id)){
         next(new Error('user id must be an integer'));
         return;
     }
