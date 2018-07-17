@@ -84,6 +84,7 @@ router.param('user_id', (req, res, next, idStr) => {
 });
 
 router.use((req, res, next) => {
+    console.log("!!!!!!!! PARSE AUTH");
     if (!req.header || !req.header.authorization){
         next();
         return;
