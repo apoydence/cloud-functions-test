@@ -2,6 +2,7 @@ var finalhandler = require('finalhandler')
 var Router       = require('router')
 var router       = Router()
 var util         = require('util')
+var users        = require('./users')
 
 const pg = require('pg');
 
@@ -82,6 +83,24 @@ router.param('user_id', (req, res, next, idStr) => {
 
     req.user_id=id;
     next();
+});
+
+router.get('/users2/:user_id', (req, res)=>{
+    users.find(req.user_id,
+        (user)=>{
+            res.status(200).send(JSON.stringify(user));
+        },
+        (err)=>{
+            if (err) {
+                console.log(err);
+                res.status(500).send(JSON.stringify({"error":"failed to make request to database"}));
+                return;
+            }
+
+            res.status(404).send(JSON.stringify({"error":"unknown user id", id:req.user_id}));
+            return;
+        },
+    )
 });
 
 router.get('/users/:user_id', (req, res) => {
