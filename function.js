@@ -112,7 +112,7 @@ router.get('/users/:user_id', (req, res) => {
 });
 
 router.delete('/users/:user_id', (req, res) => {
-    let query = util.format('DELETE FROM user_values where id=%d LIMIT 1', req.user_id);
+    let query = util.format('DELETE FROM user_values where id=%d', req.user_id);
 
     pool.query(query, (err, results) => {
         if (err) {
