@@ -97,8 +97,6 @@ function parseJSON(body, onSuccess, onFailure) {
 }
 
 router.post('/users/', (req, res) => {
-    console.log("!!! POST", req, req.body.message);
-    console.log("!!!", JSON.stringify(req));
     parseJSON(
         req.body.text,
         (body)=>{
@@ -166,5 +164,6 @@ router.delete('/users/:user_id', (req, res) => {
 });
 
 exports.users = (req, res) => {
+    console.log("!!! ROUTER", req.body.message);
     router(req, res, finalhandler(req, res));
 };
