@@ -105,7 +105,7 @@ router.use((req, res, next) => {
         return;
     }
 
-    console.log("!!!!!!!! PARSE AUTH4");
+    console.log("!!!!!!!! PARSE AUTH4", parts);
     req.username=parts[0];
     req.password=parts[1];
 
@@ -165,7 +165,7 @@ router.get('/users/:user_id', (req, res) => {
 });
 
 router.delete('/users/:user_id', (req, res) => {
-    console.log("!!!!!!!!!!", req.username, req.delete);
+    console.log("!!!!!!!!!!", req.username, req.password);
     let query = util.format('DELETE FROM user_values where id=%d', req.user_id);
 
     pool.query(query, (err, results) => {
