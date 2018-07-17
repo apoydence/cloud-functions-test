@@ -24,8 +24,13 @@ const pool = new pg.Pool({
     database: dbName
 });
 
-exports.cloudSQLTest = function cloudSQLTest(event, callback) {
+exports.cloudSQLTest = function cloudSQLTest(req, res) {
     pool.query('SELECT NOW() as now', (error, results) => {
-      callback(error, results);
+      if (err) {
+          res.status(500).send(JSON.stringify(err));
+          return;
+      }
+
+      res.status(200).send(JSON.stringify(results));
     });
 };
