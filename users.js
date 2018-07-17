@@ -2,7 +2,6 @@ var express = require('express'),
     app = express(),
     hateoasLinker = require('express-hateoas-links');
 
-
 app.use(hateoasLinker);
 
 app.get('/users', (req, res) => {
@@ -38,4 +37,8 @@ app.get('/users', (req, res) => {
         {rel: "self", method: "GET", href: "/users/"},
         {rel: "create", method: "POST", title: "Create User", href: "/users/"},
     ]);
+});
+
+app.listen(3000, function() {
+    console.log("listening");
 });
