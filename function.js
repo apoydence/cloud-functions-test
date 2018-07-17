@@ -83,6 +83,30 @@ router.param('user_id', (req, res, next, idStr) => {
     next();
 });
 
+router.use((req, res, next) => {
+    if (!req.header || !req.header.authorization){
+        next();
+        return;
+    }
+
+    let parts = req.header.authorization.split(/[ ,]+/)
+    if (parts.length != 2 || parts[0] != "Basic") {
+        next();
+        return;
+    }
+
+    parts = Buffer.from(parts[1], 'base64').toString('ascii').split(':');
+    if (parts.length != 2) {
+        next();
+        return;
+    }
+
+    req.username=parts[0];
+    req.password=parts[1];
+
+    next();
+});
+
 router.post('/users/', (req, res) => {
     if (!req.body.username){
         res.status(400).send(JSON.stringify({"error": "missing username"}));
@@ -136,6 +160,7 @@ router.get('/users/:user_id', (req, res) => {
 });
 
 router.delete('/users/:user_id', (req, res) => {
+    console.log("!!!!!!!!!!", req.username, req.delete);
     let query = util.format('DELETE FROM user_values where id=%d', req.user_id);
 
     pool.query(query, (err, results) => {
@@ -150,7 +175,5 @@ router.delete('/users/:user_id', (req, res) => {
 });
 
 exports.users = (req, res) => {
-    // req.body=Object.keys(req.body)[0];
-    console.log("!!!!", req.body, typeof req.body);
     router(req, res, finalhandler(req, res));
 };
