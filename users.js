@@ -35,7 +35,7 @@ app.get('/users', (req, res) => {
     };
 
     res.json(userSchema, [
-        {rel: "self": method; "GET", href: "/users/"},
-        {rel: "create": method: "POST", title: "Create User", href: "/users/"},
+        {rel: "self", method: "GET", href: "/users/"},
+        {rel: "create", method: "POST", title: "Create User", href: "/users/"},
     ]);
 });
