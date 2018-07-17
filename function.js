@@ -19,8 +19,7 @@ const dbName = process.env.DB_NAME;
     });
 
 router.get('/users', (req, res) => {
-    pool.query('SELECT id,username,sec_level from user_values', (err, results) => {
-        if (err) {
+    pool.query('SELECT id,username,sec_level FROM user_values', (err, results) => { if (err) {
             console.log(err);
             res.status(500).send(JSON.stringify({"error":"failed to make request to database"}));
             return;
@@ -86,7 +85,7 @@ router.param('user_id', (req, res, next, idStr) => {
 });
 
 router.get('/users/:user_id', (req, res) => {
-    let query = util.format('SELECT id,username,sec_level from user_values where id=%d limit 1', req.user_id);
+    let query = util.format('SELECT id,username,sec_level FROM user_values where id=%d LIMIT 1', req.user_id);
 
     pool.query(query, (err, results) => {
         if (err) {
@@ -109,6 +108,25 @@ router.get('/users/:user_id', (req, res) => {
                 {rel: "delete", method: "DELETE", title: "Delete User", href: "/users/"+req.user_id},
             ],
         }));
+    });
+});
+
+router.delete('/users/:user_id', (req, res) => {
+    let query = util.format('DELETE FROM user_values where id=%d LIMIT 1', req.user_id);
+
+    pool.query(query, (err, results) => {
+        if (err) {
+            console.log(err);
+            res.status(500).send(JSON.stringify({"error":"failed to make request to database"}));
+            return;
+        }
+
+        if (results.rows.length == 0) {
+            res.status(404).send(JSON.stringify({"error":"unknown user id", id:req.user_id}));
+            return;
+        }
+
+        res.status(204).end();
     });
 });
 
