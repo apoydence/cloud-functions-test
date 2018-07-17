@@ -173,6 +173,6 @@ router.delete('/users/:user_id', (req, res) => {
 
 exports.users = (req, res) => {
     // req.body=Object.keys(req.body)[0];
-    console.log("!!!!", req.body);
+    console.log("!!!!", req.body, typeof req.body);
     router(req, res, finalhandler(req, res));
 };
