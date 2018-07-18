@@ -13,6 +13,7 @@ router.use((req, res, next) => {
 });
 
 router.get('/', (req, res) => {
+    console.log("SERVING PHOTO ROOT");
     pool.query('SELECT id,name FROM photos', (err, results) => {
         console.log("QUERY RESULTS", err, results);
         if (err) {
