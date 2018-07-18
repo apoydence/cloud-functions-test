@@ -29,7 +29,6 @@ router.param('user_id', (req, res, next, idStr) => {
 });
 
 router.use((req, res, next) => {
-    console.log("USE CHECK USER", req.headers);
     if (!req.headers || !req.headers.authorization){
         next();
         return;
@@ -75,13 +74,45 @@ router.use((req, res, next) => {
 
 
 router.get('/users', (req, res) => {
+    var userSchema = {
+        "name": "user",
+        "description": "This JSON Schema defines the paramaters required to create a user",
+        "properties": {
+            "username": {
+                "title": "Username",
+                "description": "Please enter a username",
+                "type": "string",
+                "maxLength": 30,
+                "minLength": 1,
+                "required": true
+            },
+            "password": {
+                "title": "Password",
+                "description": "Please enter a password",
+                "type": "string",
+                "maxLength": 30,
+                "minLength": 8,
+                "required": true
+            },
+            "sec_level": {
+                "title": "Security Level",
+                "description": "Please enter a security level. It must be >= 0. Lower is less privileged.",
+                "type": "int"
+            },
+        },
+        "links": [
+            {rel: "self", method: "GET", href: "/users/"},
+            {rel: "create", method: "POST", title: "Create User", href: "/users/"},
+        ],
+    }
+
     if (!req.user || req.user.sec_level == 0){
-        console.log("USER", req.user);
-        res.status(401).end();
+        res.status(200).send(JSON.stringify(userSchema));
         return;
     }
 
-    pool.query('SELECT id,username,sec_level FROM user_values', (err, results) => { if (err) {
+    pool.query('SELECT id,username,sec_level FROM user_values', (err, results) => {
+        if (err) {
             console.log(err);
             res.status(500).send(JSON.stringify({"error":"failed to make request to database"}));
             return;
@@ -98,39 +129,7 @@ router.get('/users', (req, res) => {
             }
         });
 
-        var userSchema = {
-            "name": "user",
-            "description": "This JSON Schema defines the paramaters required to create a user",
-            "properties": {
-                "username": {
-                    "title": "Username",
-                    "description": "Please enter a username",
-                    "type": "string",
-                    "maxLength": 30,
-                    "minLength": 1,
-                    "required": true
-                },
-                "password": {
-                    "title": "Password",
-                    "description": "Please enter a password",
-                    "type": "string",
-                    "maxLength": 30,
-                    "minLength": 8,
-                    "required": true
-                },
-                "sec_level": {
-                    "title": "Security Level",
-                    "description": "Please enter a security level. It must be >= 0. Lower is less privileged.",
-                    "type": "int"
-                },
-            },
-            links: [
-                {rel: "self", method: "GET", href: "/users/"},
-                {rel: "create", method: "POST", title: "Create User", href: "/users/"},
-            ],
-            users: users,
-        };
-
+        userSchema.users=users;
         res.status(200).send(JSON.stringify(userSchema));
     });
 });
@@ -191,12 +190,10 @@ router.get('/users/:user_id', (req, res) => {
     });
 });
 
-function checkUser(username, password, onSuccess, onError){
+function checkUser(username, password, onSuccess, onError) {
     let query = util.format("SELECT id,sec_level FROM user_values WHERE username='%s' AND password='%s' LIMIT 1", username, password);
-    console.log("CHECK USER");
 
     pool.query(query, (err, results) => {
-        console.log("GOT RESULT");
         if (err) {
             onError(err);
             return;
@@ -216,7 +213,6 @@ router.delete('/users/:user_id', (req, res) => {
         res.status(401).end();
         return;
     }
-    console.log("GO DO IT");
 
     if (req.user.user_id != req.user_id) {
         res.status(400).json({"error":"mismatch in user ids"});
