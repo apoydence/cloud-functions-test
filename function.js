@@ -19,6 +19,7 @@ const pool = new pg.Pool({
 
 router.get('/users', (req, res) => {
     if (!req.user || req.user.sec_level == 0){
+        console.log("USER", req.user);
         res.status(401).end();
         return;
     }
