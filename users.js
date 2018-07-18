@@ -28,7 +28,7 @@ router.param('user_id', (req, res, next, idStr) => {
     next();
 });
 
-router.use((req, res, next) => {
+exports.middleware = (req, res, next) => {
     if (!req.headers || !req.headers.authorization){
         next();
         return;
@@ -70,8 +70,27 @@ router.use((req, res, next) => {
             res.status(401).end();
         }
     )
-});
+};
 
+function checkUser(username, password, onSuccess, onError) {
+    let query = util.format("SELECT id,sec_level FROM user_values WHERE username='%s' AND password='%s' LIMIT 1", username, password);
+
+    pool.query(query, (err, results) => {
+        if (err) {
+            onError(err);
+            return;
+        }
+
+        if (results.rows.length == 0) {
+            onError(null);
+            return;
+        }
+
+        onSuccess(results.rows[0].id, results.rows[0].sec_level);
+    });
+}
+
+router.use(exports.middleware);
 
 router.get('/users', (req, res) => {
     var userSchema = {
@@ -189,24 +208,6 @@ router.get('/users/:user_id', (req, res) => {
         }));
     });
 });
-
-function checkUser(username, password, onSuccess, onError) {
-    let query = util.format("SELECT id,sec_level FROM user_values WHERE username='%s' AND password='%s' LIMIT 1", username, password);
-
-    pool.query(query, (err, results) => {
-        if (err) {
-            onError(err);
-            return;
-        }
-
-        if (results.rows.length == 0) {
-            onError(null);
-            return;
-        }
-
-        onSuccess(results.rows[0].id, results.rows[0].sec_level);
-    });
-}
 
 router.delete('/users/:user_id', (req, res) => {
     if (!req.user) {
