@@ -90,6 +90,7 @@ router.param('user_id', (req, res, next, idStr) => {
 });
 
 router.use((req, res, next) => {
+    console.log("USE CHECK USER", req.headers);
     if (!req.headers || !req.headers.authorization){
         next();
         return;
