@@ -2,8 +2,7 @@ var finalhandler = require('finalhandler')
 var Router       = require('router')
 var router       = Router()
 var util         = require('util')
-
-const pg = require('pg');
+var pg           = require('pg')
 
 const connectionName = process.env.CONN_NAME;
 const dbUser = process.env.DB_USER

@@ -1,6 +1,19 @@
 var finalhandler = require('finalhandler')
 var Router       = require('router')
 var router       = Router()
+var pg           = require('pg')
+
+const connectionName = process.env.CONN_NAME;
+const dbUser = process.env.DB_USER
+const dbPass = process.env.DB_PASSWORD
+const dbName = process.env.DB_NAME
+const pool = new pg.Pool({
+    max: 1,
+    host: '/cloudsql/' + connectionName,
+    user: dbUser,
+    password: dbPass,
+    database: dbName
+});
 
 router.use(require('./users').middleware);
 router.use((req, res, next) => {
