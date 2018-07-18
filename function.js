@@ -17,6 +17,63 @@ const pool = new pg.Pool({
     database: dbName
 });
 
+router.param('user_id', (req, res, next, idStr) => {
+    let id = parseInt(idStr);
+    if (isNaN(id)){
+        next(new Error('user id must be an integer'));
+        return;
+    }
+
+    req.user_id=id;
+    next();
+});
+
+router.use((req, res, next) => {
+    console.log("USE CHECK USER", req.headers);
+    if (!req.headers || !req.headers.authorization){
+        next();
+        return;
+    }
+
+    let parts = req.headers.authorization.split(/[ ,]+/)
+    if (parts.length != 2 || parts[0] != "Basic") {
+        next();
+        return;
+    }
+
+    parts = Buffer.from(parts[1], 'base64').toString('ascii').split(':');
+    if (parts.length != 2) {
+        next();
+        return;
+    }
+
+    let username = parts[0];
+    let password = parts[1];
+
+    if (!username || !password) {
+        next();
+        return;
+    }
+
+    checkUser(
+        username,
+        password,
+        (id, sec_level) => {
+            req.user = {
+                username: username,
+                password: password,
+                user_id: id,
+                sec_level: sec_level,
+            }
+            next();
+        },
+        (error) => {
+            res.status(401).end();
+        }
+    )
+});
+
+
 router.get('/users', (req, res) => {
     if (!req.user || req.user.sec_level == 0){
         console.log("USER", req.user);
@@ -76,62 +133,6 @@ router.get('/users', (req, res) => {
 
         res.status(200).send(JSON.stringify(userSchema));
     });
-});
-
-router.param('user_id', (req, res, next, idStr) => {
-    let id = parseInt(idStr);
-    if (isNaN(id)){
-        next(new Error('user id must be an integer'));
-        return;
-    }
-
-    req.user_id=id;
-    next();
-});
-
-router.use((req, res, next) => {
-    console.log("USE CHECK USER", req.headers);
-    if (!req.headers || !req.headers.authorization){
-        next();
-        return;
-    }
-
-    let parts = req.headers.authorization.split(/[ ,]+/)
-    if (parts.length != 2 || parts[0] != "Basic") {
-        next();
-        return;
-    }
-
-    parts = Buffer.from(parts[1], 'base64').toString('ascii').split(':');
-    if (parts.length != 2) {
-        next();
-        return;
-    }
-
-    let username = parts[0];
-    let password = parts[1];
-
-    if (!username || !password) {
-        next();
-        return;
-    }
-
-    checkUser(
-        username,
-        password,
-        (id, sec_level) => {
-            req.user = {
-                username: username,
-                password: password,
-                user_id: id,
-                sec_level: sec_level,
-            }
-            next();
-        },
-        (error) => {
-            res.status(401).end();
-        }
-    )
 });
 
 router.post('/users/', (req, res) => {
