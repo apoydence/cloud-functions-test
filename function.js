@@ -152,6 +152,10 @@ router.post('/users/', (req, res) => {
 });
 
 router.get('/users/:user_id', (req, res) => {
+    if (req.user.user_id != req.user_id && req.user.sec_level == 0) {
+        res.status(401).end();
+    }
+
     let query = util.format('SELECT id,username,sec_level FROM user_values WHERE id=%d LIMIT 1', req.user_id);
 
     pool.query(query, (err, results) => {
