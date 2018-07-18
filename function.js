@@ -18,6 +18,11 @@ const pool = new pg.Pool({
 });
 
 router.get('/users', (req, res) => {
+    if (!req.user || req.user.sec_level == 0){
+        res.status(401).end();
+        return;
+    }
+
     pool.query('SELECT id,username,sec_level FROM user_values', (err, results) => { if (err) {
             console.log(err);
             res.status(500).send(JSON.stringify({"error":"failed to make request to database"}));
@@ -154,6 +159,7 @@ router.post('/users/', (req, res) => {
 router.get('/users/:user_id', (req, res) => {
     if (req.user.user_id != req.user_id && req.user.sec_level == 0) {
         res.status(401).end();
+        return;
     }
 
     let query = util.format('SELECT id,username,sec_level FROM user_values WHERE id=%d LIMIT 1', req.user_id);
@@ -203,10 +209,9 @@ function checkUser(username, password, onSuccess, onError){
 }
 
 router.delete('/users/:user_id', (req, res) => {
-    console.log("DELETE");
     if (!req.user) {
         res.status(401).end();
-        return
+        return;
     }
     console.log("GO DO IT");
 
