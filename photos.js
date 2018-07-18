@@ -30,8 +30,12 @@ router.get('/', (req, res) => {
             }
         });
 
-        userSchema.photos=photos;
-        res.status(200).send(JSON.stringify(userSchema));
+        res.status(200).json({
+            photos:photos,
+              links: [
+                  {rel: "self", method: "GET", href: "/"},
+              ],
+        });
     });
 });
 
