@@ -12,7 +12,7 @@ router.use((req, res, next) => {
     next();
 });
 
-router.get('/photos', (req, res) => {
+router.get('/', (req, res) => {
     pool.query('SELECT id,name FROM photos', (err, results) => {
         if (err) {
             console.log(err);
