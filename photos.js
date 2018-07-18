@@ -14,6 +14,7 @@ router.use((req, res, next) => {
 
 router.get('/', (req, res) => {
     pool.query('SELECT id,name FROM photos', (err, results) => {
+        console.log("QUERY RESULTS", err, results);
         if (err) {
             console.log(err);
             res.status(500).send(JSON.stringify({"error":"failed to make request to database"}));
@@ -30,11 +31,13 @@ router.get('/', (req, res) => {
             }
         });
 
+        console.log("POST MAP", photos);
+
         res.status(200).json({
             photos:photos,
-              links: [
-                  {rel: "self", method: "GET", href: "/"},
-              ],
+            links: [
+                {rel: "self", method: "GET", href: "/"},
+            ],
         });
     });
 });
