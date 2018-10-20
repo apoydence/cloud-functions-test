@@ -18,12 +18,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/apoydence/cloud-functions-test.git"
+    "url": "git+https://github.com/poy/cloud-functions-test.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/apoydence/cloud-functions-test/issues"
+    "url": "https://github.com/poy/cloud-functions-test/issues"
   },
-  "homepage": "https://github.com/apoydence/cloud-functions-test#readme"
+  "homepage": "https://github.com/poy/cloud-functions-test#readme"
 }
